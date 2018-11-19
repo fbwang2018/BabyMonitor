@@ -1,15 +1,29 @@
 cmake_minimum_required (VERSION 3.0)
 
-#project name
-PROJECT(BabyMonitor)
+project(BabyMonitor)
 
-#head file path
-INCLUDE_DIRECTORIES(
-include
+find_package(OpenCV REQUIRED)
+
+add_compile_options(-std=c++11)
+
+include_directories(
+    include
+    include/datafetch
+    include/training
+    ${OpenCV_INCLUDE_DIRS}
+
 )
-#source directory
-AUX_SOURCE_DIRECTORY(src DIR_SRCS)
 
 
-#add executable file
-ADD_EXECUTABLE(BabyMonitor ${DIR_SRCS})
+add_executable(${PROJECT_NAME}
+    src/main.cpp
+    src/BabyMonitor.cpp
+    src/datafetch/RstpDataFetch.cpp
+)
+
+target_link_libraries(${PROJECT_NAME}
+  ${OpenCV_LIBRARIES}
+  vlccore
+  vlc
+)
+
