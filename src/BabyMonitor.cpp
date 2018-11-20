@@ -11,3 +11,8 @@ BabyMonitor::~BabyMonitor()
 		delete m_dataFetch;
 	}
 }
+
+cv::Mat BabyMonitor::GetImage()
+{
+	return m_dataFetch->GetImage();
+}

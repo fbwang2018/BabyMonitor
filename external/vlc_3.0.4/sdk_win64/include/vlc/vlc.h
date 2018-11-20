@@ -33,6 +33,8 @@
  * This file defines libvlc new external API
  */
 
+typedef size_t ssize_t;
+
 # ifdef __cplusplus
 extern "C" {
 # endif

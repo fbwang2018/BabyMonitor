@@ -13,6 +13,7 @@ class BabyMonitor
 public:
 	BabyMonitor(string& rtsp_url);
 	virtual ~BabyMonitor();
+	cv::Mat GetImage();
 
 private:
 	IDataFetch* m_dataFetch;

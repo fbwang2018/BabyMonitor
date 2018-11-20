@@ -13,5 +13,7 @@ int main(int argc, char *argv[])
 	
 	BabyMonitor babyMonitor(rtsp_url);
 
+	cv::Mat img = babyMonitor.GetImage();
+
 	return 0;
 }

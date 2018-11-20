@@ -2,12 +2,12 @@
 
 RstpDataFetch::RstpDataFetch():m_url(""), m_vlcInst(nullptr)
 {
-
+	Init();
 }
 
 RstpDataFetch::RstpDataFetch(string& rstp_url):m_url(rstp_url), m_vlcInst(nullptr)
 {
-
+	Init();
 }
 
  RstpDataFetch::~RstpDataFetch()
