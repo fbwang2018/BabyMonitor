@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 
+#include <opencv2/opencv.hpp>
 #include "IDataFetch.hpp"
 //#include "vlc/vlc.h"
 extern "C"
@@ -29,6 +30,13 @@ public:
 	void Init();
 
 private:
+	// libvlc_video_set_callbacks
+	static void Display(void *data, void *id);
+
+	static void Unlock(void *data, void *id, void *const *planes);
+
+	static void* Lock(void *data, void **planes);
+
 	string m_url;
 
 	libvlc_instance_t* m_vlcInst;

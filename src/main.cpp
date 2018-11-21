@@ -15,5 +15,10 @@ int main(int argc, char *argv[])
 
 	cv::Mat img = babyMonitor.GetImage();
 
+	while(true)
+	{
+		
+	}
+
 	return 0;
 }

@@ -1,5 +1,40 @@
 #include "RstpDataFetch.hpp"
 
+using namespace cv;
+
+int width = 640;
+
+int height = 480;
+
+static char* videobuf;
+
+void RstpDataFetch::Display(void*data,void *id)
+{
+    IplImage *img = cvCreateImage(CvSize(width, height), IPL_DEPTH_8U, 4);
+
+    img->imageData = videobuf;
+
+    cvShowImage("test", img);
+
+    waitKey(10);
+
+    cvReleaseImage(&img);
+}
+
+void *RstpDataFetch::Lock(void *data, void**p_pixels)
+{
+    *p_pixels = videobuf;
+
+    return NULL;
+}
+
+void RstpDataFetch::Unlock(void *data, void *id, void *const *p_pixels)
+{
+    (void)data;
+
+    assert(id==NULL);
+}
+
 RstpDataFetch::RstpDataFetch():m_url(""), m_vlcInst(nullptr)
 {
 	Init();
@@ -27,6 +62,8 @@ RstpDataFetch::RstpDataFetch(string& rstp_url):m_url(rstp_url), m_vlcInst(nullpt
  		libvlc_release(m_vlcInst);
  	}
  }
+
+
 
  cv::Mat RstpDataFetch::GetImage()
  {
@@ -64,6 +101,9 @@ RstpDataFetch::RstpDataFetch(string& rstp_url):m_url(rstp_url), m_vlcInst(nullpt
 
  	m_vlcPlayer = libvlc_media_player_new_from_media(m_vlcMedia);
 
+	libvlc_video_set_callbacks(m_vlcPlayer, Lock, Unlock, Display, NULL);
+
+	libvlc_video_set_format(m_vlcPlayer, "RV32", width, height, width << 2);
 
  	libvlc_media_player_play(m_vlcPlayer);
  }
