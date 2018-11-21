@@ -44,6 +44,11 @@ private:
 	libvlc_media_t*    m_vlcMedia;
 	
 	libvlc_media_player_t* m_vlcPlayer;
+
+	static char* videobuf;
+
+	static char szName[];
+
 };
 
 #endif //RSTP_DATA_FETCH_H

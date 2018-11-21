@@ -1,4 +1,6 @@
 #include "RstpDataFetch.hpp"
+#include <chrono>
+#include <thread>
 
 using namespace cv;
 
@@ -6,19 +8,30 @@ int width = 640;
 
 int height = 480;
 
-static char* videobuf;
+#define _CRT_SECURE_NO_WARNINGS
 
 void RstpDataFetch::Display(void*data,void *id)
 {
+	int static i = 0;
+	
+	i++;
+
     IplImage *img = cvCreateImage(CvSize(width, height), IPL_DEPTH_8U, 4);
 
+
     img->imageData = videobuf;
+	sprintf_s(szName, 55, "E:\\%d.jpg", i++);
 
-    cvShowImage("test", img);
+	Mat Img;
+	Img = cvarrToMat(img);
+	imwrite(szName, Img);
 
-    waitKey(10);
+   // cvShowImage("test", img);
+
+    //waitKey(10);
 
     cvReleaseImage(&img);
+
 }
 
 void *RstpDataFetch::Lock(void *data, void**p_pixels)
@@ -68,6 +81,10 @@ RstpDataFetch::RstpDataFetch(string& rstp_url):m_url(rstp_url), m_vlcInst(nullpt
  cv::Mat RstpDataFetch::GetImage()
  {
  	 cv::Mat img;
+	 libvlc_media_player_play(m_vlcPlayer);
+	 std::this_thread::sleep_for(2s);
+
+	 libvlc_media_player_stop(m_vlcPlayer);
 
  	 return img;
  }
@@ -104,6 +121,7 @@ RstpDataFetch::RstpDataFetch(string& rstp_url):m_url(rstp_url), m_vlcInst(nullpt
 	libvlc_video_set_callbacks(m_vlcPlayer, Lock, Unlock, Display, NULL);
 
 	libvlc_video_set_format(m_vlcPlayer, "RV32", width, height, width << 2);
-
- 	libvlc_media_player_play(m_vlcPlayer);
  }
+ char* RstpDataFetch::videobuf = (char*)malloc((height * width) << 2);
+
+ char  RstpDataFetch::szName[56] = { 0 };
