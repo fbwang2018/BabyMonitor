@@ -4,48 +4,48 @@
 
 using namespace cv;
 
-int width = 640;
-
-int height = 480;
-
-#define _CRT_SECURE_NO_WARNINGS
-
 void RstpDataFetch::Display(void*data,void *id)
-{
+{	/*
 	int static i = 0;
-	
-	i++;
 
-    IplImage *img = cvCreateImage(CvSize(width, height), IPL_DEPTH_8U, 4);
+    IplImage *img = cvCreateImage(CvSize(m_width, m_height), IPL_DEPTH_8U, 4);
+    
+	img->imageData = m_videoBuf;
 
+	if(m_saveImg)
+	{
+		Mat Img;
+		sprintf_s(m_fileName, 55, "D:\\github\\BabyMonitor\\res\\train\\%d.jpg", i++);
 
-    img->imageData = videobuf;
-	sprintf_s(szName, 55, "E:\\%d.jpg", i++);
+		Img = cvarrToMat(img);
 
-	Mat Img;
-	Img = cvarrToMat(img);
-	imwrite(szName, Img);
+		imwrite(m_fileName, Img);
 
-   // cvShowImage("test", img);
-
-    //waitKey(10);
+		m_saveImg = false;
+	}
 
     cvReleaseImage(&img);
-
+	*/
 }
 
 void *RstpDataFetch::Lock(void *data, void**p_pixels)
 {
-    *p_pixels = videobuf;
+	PCTX ctx = (PCTX)data;
 
-    return NULL;
+	ctx->m_mtx.lock();
+
+    *p_pixels = ctx->pixels;
+
+    return 0;
 }
 
 void RstpDataFetch::Unlock(void *data, void *id, void *const *p_pixels)
 {
-    (void)data;
+	PCTX ctx = (PCTX)data;
 
-    assert(id==NULL);
+	ctx->m_mtx.unlock();
+
+    assert(id== nullptr);
 }
 
 RstpDataFetch::RstpDataFetch():m_url(""), m_vlcInst(nullptr)
@@ -58,39 +58,54 @@ RstpDataFetch::RstpDataFetch(string& rstp_url):m_url(rstp_url), m_vlcInst(nullpt
 	Init();
 }
 
- RstpDataFetch::~RstpDataFetch()
- {
- 	if(m_vlcMedia)
- 	{
+RstpDataFetch::~RstpDataFetch()
+{
+	if (m_vlcMedia)
+	{
 		libvlc_media_release(m_vlcMedia);
- 	}
+	}
 
- 	if(m_vlcPlayer)
- 	{
+	if (m_vlcPlayer)
+	{
 		libvlc_media_player_release(m_vlcPlayer);
- 	}
+	}
 
- 	if(m_vlcInst)
- 	{
- 		libvlc_release(m_vlcInst);
- 	}
- }
+	if (m_vlcInst)
+	{
+		libvlc_release(m_vlcInst);
+	}
 
-
+	if (m_pCtx->m_img)
+	{
+		delete m_pCtx->m_img;
+	}
+}
 
  cv::Mat RstpDataFetch::GetImage()
  {
+	 m_pCtx->m_mtx.lock();
+
+	 int static i = 0;
+
  	 cv::Mat img;
-	 libvlc_media_player_play(m_vlcPlayer);
-	 std::this_thread::sleep_for(2s);
 
-	 libvlc_media_player_stop(m_vlcPlayer);
+	 sprintf_s(m_fileName, 55, "D:\\github\\BabyMonitor\\res\\train\\%d.jpg", ++i);
 
+	 imwrite(m_fileName, (*m_pCtx->m_img));
+	 m_pCtx->m_mtx.unlock();
  	 return img;
  }
 
  void RstpDataFetch::Init()
  {
+	 m_pCtx = new CTX();
+
+	m_pCtx->m_img = new cv::Mat(m_height, m_width, CV_8UC3);
+	//m_pCtx->m_img = (char*)malloc((m_height * m_width) << 2);
+
+	m_pCtx->pixels = (unsigned char*)m_pCtx->m_img->data;
+	//m_pCtx->pixels = (unsigned char*)m_pCtx->m_img;
+
  	m_vlcInst = libvlc_new(0, nullptr);
 
  	if(!m_vlcInst)
@@ -118,10 +133,14 @@ RstpDataFetch::RstpDataFetch(string& rstp_url):m_url(rstp_url), m_vlcInst(nullpt
 
  	m_vlcPlayer = libvlc_media_player_new_from_media(m_vlcMedia);
 
-	libvlc_video_set_callbacks(m_vlcPlayer, Lock, Unlock, Display, NULL);
+	libvlc_video_set_callbacks(m_vlcPlayer, Lock, Unlock, Display, m_pCtx);
 
-	libvlc_video_set_format(m_vlcPlayer, "RV32", width, height, width << 2);
+	libvlc_video_set_format(m_vlcPlayer, "RV24", m_width, m_height, m_width*3);
+
+	libvlc_media_player_play(m_vlcPlayer);
  }
- char* RstpDataFetch::videobuf = (char*)malloc((height * width) << 2);
+ char* RstpDataFetch::m_videoBuf = (char*)malloc((m_height * m_width) << 2);
 
- char  RstpDataFetch::szName[56] = { 0 };
+ char  RstpDataFetch::m_fileName[56] = { 0 };
+
+ bool  RstpDataFetch::m_saveImg = false;

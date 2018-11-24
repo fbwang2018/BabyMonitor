@@ -4,3 +4,4 @@ win/BabyMonitor/x64/Debug/BabyMonitor.*
 win/BabyMonitor/x64/Debug/*.obj
 win/BabyMonitor/x64/Debug/*.pdb
 win/BabyMonitor/x64/Debug/*.idb
+res
