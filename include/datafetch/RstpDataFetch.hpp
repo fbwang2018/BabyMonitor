@@ -11,7 +11,7 @@ extern "C"
 {
 	#include "vlc/vlc.h"
 };
-
+#define _CRT_SECURE_NO_WARNINGS
 using namespace std;
 
 class RstpDataFetch : public IDataFetch

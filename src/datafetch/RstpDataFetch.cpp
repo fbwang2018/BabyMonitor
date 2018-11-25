@@ -1,8 +1,11 @@
 #include "RstpDataFetch.hpp"
 #include <chrono>
 #include <thread>
+#include <ctime>
+#include <time.h>
 
 using namespace cv;
+
 
 void RstpDataFetch::Display(void*data,void *id)
 {	/*
@@ -89,11 +92,19 @@ RstpDataFetch::~RstpDataFetch()
 
  	 cv::Mat img;
 
-	 sprintf_s(m_fileName, 55, "D:\\github\\BabyMonitor\\res\\train\\%d.jpg", ++i);
+	 struct tm ts;   //tm½á¹¹Ö¸Õë
+
+	 auto t = chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+	 localtime_s(&ts, &t);
+
+	 sprintf_s(m_fileName, 55, "D:\\github\\BabyMonitor\\res\\train\\%d%d%d%d%d-%d.jpg", ts.tm_year + 1900, ts.tm_mon + 1, ts.tm_mday, ts.tm_hour, ts.tm_min,++i);
 
 	 imwrite(m_fileName, (*m_pCtx->m_img));
+
 	 m_pCtx->m_mtx.unlock();
- 	 return img;
+ 	 
+	 return img;
  }
 
  void RstpDataFetch::Init()

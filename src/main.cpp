@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
 	while(true)
 	{
-		std::this_thread::sleep_for(20s);
+		std::this_thread::sleep_for(300s);
 
 		babyMonitor.GetImage();
 	}
