@@ -84,13 +84,10 @@ RstpDataFetch::~RstpDataFetch()
 	}
 }
 
- cv::Mat RstpDataFetch::GetImage()
- {
-	 m_pCtx->m_mtx.lock();
-
+string RstpDataFetch::GetImage()
+{
+	 //m_pCtx->m_mtx.lock();
 	 int static i = 0;
-
- 	 cv::Mat img;
 
 	 struct tm ts;   //tm½á¹¹Ö¸Õë
 
@@ -100,11 +97,12 @@ RstpDataFetch::~RstpDataFetch()
 
 	 sprintf_s(m_fileName, 55, "D:\\github\\BabyMonitor\\res\\train\\%d%d%d%d%d-%d.jpg", ts.tm_year + 1900, ts.tm_mon + 1, ts.tm_mday, ts.tm_hour, ts.tm_min,++i);
 
-	 imwrite(m_fileName, (*m_pCtx->m_img));
+	// imwrite(m_fileName, (*m_pCtx->m_img));
 
-	 m_pCtx->m_mtx.unlock();
- 	 
-	 return img;
+	 libvlc_video_take_snapshot(m_vlcPlayer, 0, m_fileName, 0, 0);
+
+	 //m_pCtx->m_mtx.unlock();
+	 return string(m_fileName);
  }
 
  void RstpDataFetch::Init()
@@ -141,17 +139,28 @@ RstpDataFetch::~RstpDataFetch()
 
 		return;
  	}
+	libvlc_media_add_option(m_vlcMedia, ":avcodec-hw=none");
 
  	m_vlcPlayer = libvlc_media_player_new_from_media(m_vlcMedia);
+	
+	//libvlc_video_set_callbacks(m_vlcPlayer, Lock, Unlock, Display, m_pCtx);
 
-	libvlc_video_set_callbacks(m_vlcPlayer, Lock, Unlock, Display, m_pCtx);
+	//libvlc_video_set_format(m_vlcPlayer, "RV24", m_width, m_height, m_width*3);
 
-	libvlc_video_set_format(m_vlcPlayer, "RV24", m_width, m_height, m_width*3);
-
-	libvlc_media_player_play(m_vlcPlayer);
+	//libvlc_media_player_play(m_vlcPlayer);
  }
  char* RstpDataFetch::m_videoBuf = (char*)malloc((m_height * m_width) << 2);
 
  char  RstpDataFetch::m_fileName[56] = { 0 };
 
  bool  RstpDataFetch::m_saveImg = false;
+
+ void RstpDataFetch::StopDevice()
+ {
+	 libvlc_media_player_stop(m_vlcPlayer);
+ }
+
+ void RstpDataFetch::StartDevice()
+ {
+	 libvlc_media_player_play(m_vlcPlayer);
+ }

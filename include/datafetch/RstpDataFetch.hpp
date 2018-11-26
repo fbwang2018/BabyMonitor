@@ -12,7 +12,6 @@ extern "C"
 	#include "vlc/vlc.h"
 };
 #define _CRT_SECURE_NO_WARNINGS
-using namespace std;
 
 class RstpDataFetch : public IDataFetch
 {
@@ -36,7 +35,11 @@ public:
 
 	virtual ~RstpDataFetch();
 
-	cv::Mat GetImage();
+	string GetImage();
+
+	void StopDevice();
+
+	void StartDevice();
 
 private:
 	void Init();

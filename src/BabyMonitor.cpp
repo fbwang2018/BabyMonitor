@@ -12,7 +12,15 @@ BabyMonitor::~BabyMonitor()
 	}
 }
 
-cv::Mat BabyMonitor::GetImage()
+string BabyMonitor::GetImage()
 {
-	return m_dataFetch->GetImage();
+	m_dataFetch->StartDevice();
+
+	std::this_thread::sleep_for(1s);
+
+	string imgpath = m_dataFetch->GetImage();
+
+	m_dataFetch->StopDevice();
+
+	return imgpath;
 }

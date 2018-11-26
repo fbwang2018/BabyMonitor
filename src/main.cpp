@@ -15,13 +15,11 @@ int main(int argc, char *argv[])
 	
 	BabyMonitor babyMonitor(rtsp_url);
 
-	cv::Mat img = babyMonitor.GetImage();
-
 	while(true)
 	{
-		std::this_thread::sleep_for(300s);
+		string img = babyMonitor.GetImage();
 
-		babyMonitor.GetImage();
+		std::this_thread::sleep_for(300s);
 	}
 
 	return 0;
