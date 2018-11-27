@@ -37,9 +37,9 @@ public:
 
 	string GetImage();
 
-	void StopDevice();
+	void PauseDevice();
 
-	void StartDevice();
+	void ResumeDevice();
 
 private:
 	void Init();

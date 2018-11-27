@@ -14,13 +14,13 @@ BabyMonitor::~BabyMonitor()
 
 string BabyMonitor::GetImage()
 {
-	m_dataFetch->StartDevice();
+	m_dataFetch->ResumeDevice();
 
 	std::this_thread::sleep_for(1s);
 
 	string imgpath = m_dataFetch->GetImage();
 
-	m_dataFetch->StopDevice();
+	m_dataFetch->PauseDevice();
 
 	return imgpath;
 }

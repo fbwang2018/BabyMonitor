@@ -13,8 +13,8 @@ class IDataFetch
 {
 public:
     virtual string GetImage() = 0;
-	virtual void StartDevice() = 0;
-	virtual void StopDevice() = 0;
+	virtual void ResumeDevice() = 0;
+	virtual void PauseDevice() = 0;
 };
 
 #endif //INTERFACE_DATA_FETCH_H

@@ -87,15 +87,13 @@ RstpDataFetch::~RstpDataFetch()
 string RstpDataFetch::GetImage()
 {
 	 //m_pCtx->m_mtx.lock();
-	 int static i = 0;
-
 	 struct tm ts;   //tm½á¹¹Ö¸Õë
 
 	 auto t = chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
 	 localtime_s(&ts, &t);
 
-	 sprintf_s(m_fileName, 55, "D:\\github\\BabyMonitor\\res\\train\\%d%d%d%d%d-%d.jpg", ts.tm_year + 1900, ts.tm_mon + 1, ts.tm_mday, ts.tm_hour, ts.tm_min,++i);
+	 sprintf_s(m_fileName, 55, "D:\\github\\BabyMonitor\\res\\train\\%d-%d-%d_%d_%d.jpg", ts.tm_year + 1900, ts.tm_mon + 1, ts.tm_mday, ts.tm_hour, ts.tm_min);
 
 	// imwrite(m_fileName, (*m_pCtx->m_img));
 
@@ -147,7 +145,7 @@ string RstpDataFetch::GetImage()
 
 	//libvlc_video_set_format(m_vlcPlayer, "RV24", m_width, m_height, m_width*3);
 
-	//libvlc_media_player_play(m_vlcPlayer);
+	libvlc_media_player_play(m_vlcPlayer);
  }
  char* RstpDataFetch::m_videoBuf = (char*)malloc((m_height * m_width) << 2);
 
@@ -155,12 +153,12 @@ string RstpDataFetch::GetImage()
 
  bool  RstpDataFetch::m_saveImg = false;
 
- void RstpDataFetch::StopDevice()
+ void RstpDataFetch::PauseDevice()
  {
-	 libvlc_media_player_stop(m_vlcPlayer);
+	 libvlc_media_player_set_pause(m_vlcPlayer, 1);
  }
 
- void RstpDataFetch::StartDevice()
+ void RstpDataFetch::ResumeDevice()
  {
-	 libvlc_media_player_play(m_vlcPlayer);
+	 libvlc_media_player_set_pause(m_vlcPlayer, 0);
  }
