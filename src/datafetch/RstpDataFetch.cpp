@@ -3,7 +3,7 @@
 #include <thread>
 #include <ctime>
 #include <time.h>
-
+#include <iostream>
 using namespace cv;
 
 
@@ -87,6 +87,33 @@ RstpDataFetch::~RstpDataFetch()
 string RstpDataFetch::GetImage()
 {
 	 //m_pCtx->m_mtx.lock();
+	std::cout << "camaera status:" << libvlc_media_player_is_playing(m_vlcPlayer) << std::endl;
+	while (libvlc_media_player_is_playing(m_vlcPlayer) != 1)
+	{
+		libvlc_state_t state = libvlc_media_player_get_state(m_vlcPlayer);
+		std::cout << "the media player state is:" << state << std::endl;
+		libvlc_media_player_stop(m_vlcPlayer);
+
+		std::cout << "the media player is not playing release resource and re init" << std::endl;
+		if (m_vlcMedia)
+		{
+			libvlc_media_release(m_vlcMedia);
+		}
+
+		if (m_vlcPlayer)
+		{
+			libvlc_media_player_release(m_vlcPlayer);
+		}
+
+		if (m_vlcInst)
+		{
+			libvlc_release(m_vlcInst);
+		}
+
+		Init();
+
+		std::this_thread::sleep_for(300s);
+	}
 	 struct tm ts;   //tm½á¹¹Ö¸Õë
 
 	 auto t = chrono::system_clock::to_time_t(std::chrono::system_clock::now());
@@ -96,7 +123,8 @@ string RstpDataFetch::GetImage()
 	 sprintf_s(m_fileName, 55, "D:\\github\\BabyMonitor\\res\\train\\%d-%d-%d_%d_%d.jpg", ts.tm_year + 1900, ts.tm_mon + 1, ts.tm_mday, ts.tm_hour, ts.tm_min);
 
 	// imwrite(m_fileName, (*m_pCtx->m_img));
-
+	
+	 
 	 libvlc_video_take_snapshot(m_vlcPlayer, 0, m_fileName, 0, 0);
 
 	 //m_pCtx->m_mtx.unlock();
